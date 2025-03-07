@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "solve.c" 
+#include "solve.c"
+
+#define SIZE 9
 
 void shuffle(int *array, int size) {
     for (int i = size - 1; i > 0; i--) {
@@ -60,7 +62,18 @@ void save_puzzle(FILE *file, int puzzle[SIZE][SIZE], int solution[SIZE][SIZE]) {
     fprintf(file, "\n");
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        printf("Usage: %s <number_of_puzzles>\n", argv[0]);
+        return 1;
+    }
+
+    int num_puzzles = atoi(argv[1]);
+    if (num_puzzles <= 0) {
+        printf("Please provide a valid number of puzzles.\n");
+        return 1;
+    }
+
     srand(time(NULL));
     FILE *file = fopen("sudoku.csv", "w");
     if (!file) {
@@ -72,7 +85,7 @@ int main() {
 
     int puzzle[SIZE][SIZE] = {0}, solution[SIZE][SIZE] = {0};
 
-    for (int i = 0; i < 100; i++) {  // Change this number to the number of sudokus you want to generate
+    for (int i = 0; i < num_puzzles; i++) {
         generate_full_board(solution);
         for (int r = 0; r < SIZE; r++)
             for (int c = 0; c < SIZE; c++)
