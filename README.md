@@ -26,7 +26,7 @@ Example: Generate 100 standard 9x9 puzzles:
 ./build.sh 100
 ```
 
-Example: Generate 10 puzzles of size 16x16 (if supported):
+Example: Generate 10 puzzles of size 16x16:
 ```bash
 ./build.sh 10 16
 ```
