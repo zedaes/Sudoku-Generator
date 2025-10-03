@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "solve.c"
+#include <math.h>
+#include "solve.h"
 
+
+#ifndef SIZE
 #define SIZE 9
+#endif
 
 void shuffle(int *array, int size) {
     for (int i = size - 1; i > 0; i--) {
@@ -14,51 +18,49 @@ void shuffle(int *array, int size) {
     }
 }
 
-void generate_full_board(int board[SIZE][SIZE]) {
-    int numbers[SIZE];
-    for (int i = 0; i < SIZE; i++) numbers[i] = i + 1;
-    shuffle(numbers, SIZE);
+void generate_full_board(int size, int board[size][size]) {
+    int numbers[size];
+    for (int i = 0; i < size; i++)
+        numbers[i] = i + 1;
+    shuffle(numbers, size);
 
-    for (int i = 0; i < SIZE; i++) {
+    for (int i = 0; i < size; i++)
         board[0][i] = numbers[i];
-    }
 
-    solve_sudoku(board);
+    solve_sudoku(size, board);
 }
 
-void remove_numbers(int board[SIZE][SIZE], int holes) {
+void remove_numbers(int size, int board[size][size], int holes) {
     for (int i = 0; i < holes; i++) {
         int row, col;
         do {
-            row = rand() % SIZE;
-            col = rand() % SIZE;
+            row = rand() % size;
+            col = rand() % size;
         } while (board[row][col] == 0);
 
         int temp = board[row][col];
         board[row][col] = 0;
 
-        int test_board[SIZE][SIZE];
-        for (int r = 0; r < SIZE; r++)
-            for (int c = 0; c < SIZE; c++)
+        int test_board[size][size];
+        for (int r = 0; r < size; r++)
+            for (int c = 0; c < size; c++)
                 test_board[r][c] = board[r][c];
 
-        if (!solve_sudoku(test_board)) {
+        if (!solve_sudoku(size, test_board)) {
             board[row][col] = temp;
         }
     }
 }
 
-void save_puzzle(FILE *file, int puzzle[SIZE][SIZE], int solution[SIZE][SIZE]) {
-    for (int i = 0; i < SIZE; i++)
-        for (int j = 0; j < SIZE; j++)
+void save_puzzle(FILE *file, int size, int puzzle[size][size], int solution[size][size]) {
+    for (int i = 0; i < size; i++)
+        for (int j = 0; j < size; j++)
             fprintf(file, "%d", puzzle[i][j]);
-    
     fprintf(file, ",");
 
-    for (int i = 0; i < SIZE; i++)
-        for (int j = 0; j < SIZE; j++)
+    for (int i = 0; i < size; i++)
+        for (int j = 0; j < size; j++)
             fprintf(file, "%d", solution[i][j]);
-    
     fprintf(file, "\n");
 }
 
@@ -75,26 +77,34 @@ int main(int argc, char *argv[]) {
     }
 
     srand(time(NULL));
+
     FILE *file = fopen("sudoku.csv", "w");
     if (!file) {
         printf("Error opening file!\n");
         return 1;
     }
-
     fprintf(file, "puzzle,solution\n");
 
-    int puzzle[SIZE][SIZE] = {0}, solution[SIZE][SIZE] = {0};
+    int puzzle[SIZE][SIZE];
+    int solution[SIZE][SIZE];
 
     for (int i = 0; i < num_puzzles; i++) {
-        generate_full_board(solution);
+        for (int r = 0; r < SIZE; r++)
+            for (int c = 0; c < SIZE; c++) {
+                puzzle[r][c] = 0;
+                solution[r][c] = 0;
+            }
+
+        generate_full_board(SIZE, solution);
+
         for (int r = 0; r < SIZE; r++)
             for (int c = 0; c < SIZE; c++)
                 puzzle[r][c] = solution[r][c];
 
-        remove_numbers(puzzle, rand() % 40 + 20);  
+        remove_numbers(SIZE, puzzle, rand() % (SIZE * 4) + SIZE * 2); // Holes scaled by size
 
-        save_puzzle(file, puzzle, solution);
-        printf("Generated Sudoku #%d\n", i + 1);
+        save_puzzle(file, SIZE, puzzle, solution);
+        printf("Generated Sudoku #%d (Size %d)\n", i + 1, SIZE);
     }
 
     fclose(file);

@@ -1,17 +1,24 @@
-#include <stdio.h>
 #include <stdbool.h>
+#include <math.h>
+#include "solve.h"
 
+#ifndef SIZE
 #define SIZE 9
+#endif
 
-bool is_valid(int board[SIZE][SIZE], int row, int col, int num) {
-    for (int i = 0; i < SIZE; i++) {
-        if (board[row][i] == num || board[i][col] == num) {
+bool is_valid(int size, int board[size][size], int row, int col, int num) {
+    for (int i = 0; i < size; i++) {
+        if (board[row][i] == num || board[i][col] == num)
             return false;
-        }
     }
-    int startRow = (row / 3) * 3, startCol = (col / 3) * 3;
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
+    int boxSize = 3;
+    if (size != 9) {
+        boxSize = (int)(sqrt((double)size));
+    }
+    int startRow = (row / boxSize) * boxSize;
+    int startCol = (col / boxSize) * boxSize;
+    for (int i = 0; i < boxSize; i++) {
+        for (int j = 0; j < boxSize; j++) {
             if (board[startRow + i][startCol + j] == num) {
                 return false;
             }
@@ -20,14 +27,15 @@ bool is_valid(int board[SIZE][SIZE], int row, int col, int num) {
     return true;
 }
 
-bool solve_sudoku(int board[SIZE][SIZE]) {
-    for (int row = 0; row < SIZE; row++) {
-        for (int col = 0; col < SIZE; col++) {
+bool solve_sudoku(int size, int board[size][size]) {
+    for (int row = 0; row < size; row++) {
+        for (int col = 0; col < size; col++) {
             if (board[row][col] == 0) {
-                for (int num = 1; num <= SIZE; num++) {
-                    if (is_valid(board, row, col, num)) {
+                for (int num = 1; num <= size; num++) {
+                    if (is_valid(size, board, row, col, num)) {
                         board[row][col] = num;
-                        if (solve_sudoku(board)) return true;
+                        if (solve_sudoku(size, board))
+                            return true;
                         board[row][col] = 0;
                     }
                 }
@@ -36,13 +44,4 @@ bool solve_sudoku(int board[SIZE][SIZE]) {
         }
     }
     return true;
-}
-
-void print_board(int board[SIZE][SIZE]) {
-    for (int i = 0; i < SIZE; i++) {
-        for (int j = 0; j < SIZE; j++) {
-            printf("%d ", board[i][j]);
-        }
-        printf("\n");
-    }
 }
