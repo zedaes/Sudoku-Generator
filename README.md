@@ -1,15 +1,34 @@
 # Sudoku Generator
+## Setup
 
-# Setup
+Make sure you have a C compiler installed (e.g., gcc).
 
-First, make sure you have C installed on your device and `gcc` as a compiler.
+Clone this repository:
+```bash
+git clone https://github.com/zedaes/Sudoku-Generator.git
+```
 
-Then, clone this repository with `git clone https://github.com/zedaes/Sudoku-Generator.git`.
+Make the build script executable:
+```bash
+chmod +x build.sh
+```
 
-Lastly, run `chmod+x build.sh`, this allows you to run it as a command.
+## How to Run
 
-# How to Run
+Run the generator by calling the build script with the number of Sudoku puzzles you want to generate as the first argument. Optionally, specify the Sudoku size (default is 9):
 
-All you need to do to run is to enter the command `./build.sh` followed by the number of sudokus you want to create. For example for 100 sudokus you would run `./build.sh 100`.
+```bash
+./build.sh <number_of_puzzles> [sudoku_size]
+```
 
-It will then save the sudokus in a `.csv` file with one column being the puzzle, and the other being the solution.
+Example: Generate 100 standard 9x9 puzzles:
+```bash
+./build.sh 100
+```
+
+Example: Generate 10 puzzles of size 16x16 (if supported):
+```bash
+./build.sh 10 16
+```
+
+The puzzles and their solutions will be saved in a file named `sudoku.csv` with two columns: one for the puzzle and one for the solution.
